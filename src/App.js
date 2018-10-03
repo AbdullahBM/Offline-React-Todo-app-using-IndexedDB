@@ -9,12 +9,16 @@ import Todoslist from './components/todosList';
 
 class App extends Component {
   
+  //Array of P values
+  arr2 = [];
+
   state = {
     id:0,
         title: '',
     description: '',
-    counters:[],
+    counters:[...this.arr2],
   };
+
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
@@ -33,19 +37,31 @@ class App extends Component {
       db = request.result;
       tx = db.transaction("Todo", "readwrite");
       store = tx.objectStore("Todo");
-      let counters=[];
+      let id = this.state.id;
       let q = store.getAll()
      q.onsuccess=()=>{
        let data = q.result;
       for (var p of data)
       {
-counters.push(p)
-// console.log(arr[p.id])
+        // this.values.push(p)
+        // console.log(p)
+        this.arr2 = [...this.arr2, p]
+        id = p.id;
+        this.setState({id});
+        
+        // console.log(id);
+        // console.log(arr[p.id])
       }
+      console.log(this.state.id);
+      // console.log(this.arr2)
       // console.log(arr);
-     } 
-     this.setState({counters});    
-     console.log(counters);
+      // console.log(this.state.counters);
+// console.log(this.arr2);
+    const counters= [...this.state.counters, this.arr2]
+console.log(counters[0]);
+     this.setState({counters:counters[0]});
+    } 
+    //     
       tx.oncomplete=()=>
       {
         db.close();
@@ -71,9 +87,12 @@ counters.push(p)
       console.log('test', this.state.description);
     });
   };
-  handleAdd= () => {
+  handleAdd= (e) => {
+    e.preventDefault();
+    let id = this.state.id;
+    id++;
 const obj ={
-  id: this.state.id,
+  id: id,
   title: this.state.title,
   description: this.state.description
 }
@@ -102,14 +121,13 @@ this.setState({counters:todos});
       }
       // console.log("before put",this.state.counters);
       
-      let id = this.state.id;
-      // console.log(this.state.counters[i])
+      
+      console.log(obj)
       store.put(obj);
-    
-      // console.log("Before set i",this.state.i)
-      id++;
+      
+      console.log("Before set i",this.state.id)
       this.setState({id});
-      // console.log("After set i",this.state.i)
+      console.log("After set i",this.state.id)
       tx.oncomplete=()=>
       {
         db.close();
